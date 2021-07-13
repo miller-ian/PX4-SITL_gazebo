@@ -54,6 +54,7 @@ BarometerPlugin::BarometerPlugin() : ModelPlugin(),
 BarometerPlugin::~BarometerPlugin()
 {
   update_connection_->~Connection();
+  gzwarn << "test" << ".\n";
 }
 
 void BarometerPlugin::getSdfParams(sdf::ElementPtr sdf)
@@ -183,7 +184,9 @@ void BarometerPlugin::OnUpdate(const common::UpdateInfo&)
 
     // convert to hPa
     const float absolute_pressure_noisy_hpa = absolute_pressure_noisy * 0.01f;
+
     baro_msg_.set_absolute_pressure(absolute_pressure_noisy_hpa);
+    baro_msg_.simulate_pressure_event(absolute_pressure_noisy_hpa);
 
     // calculate density using an ISA model for the tropsphere (valid up to 11km above MSL)
     const float density_ratio = powf(temperature_msl / temperature_local, 4.256f);
@@ -201,6 +204,7 @@ void BarometerPlugin::OnUpdate(const common::UpdateInfo&)
     baro_msg_.set_time_usec(current_time.Double() * 1e6);
 
     last_pub_time_ = current_time;
+
 
     // Publish baro msg
     pub_baro_->Publish(baro_msg_);
